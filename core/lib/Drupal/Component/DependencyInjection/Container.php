@@ -163,7 +163,10 @@ class Container implements ContainerInterface, ResetInterface {
     // Definition is a keyed array, so [0] is only defined when it is a
     // serialized string.
     if (isset($definition[0])) {
-      $definition = unserialize($definition);
+      // Restrict deserialization to stdClass only: the OptimizedPhpArrayDumper
+      // serializes service definitions as plain arrays containing stdClass value
+      // objects (type markers). No other PHP class should be instantiated here.
+      $definition = unserialize($definition, ['allowed_classes' => ['stdClass']]);
     }
 
     // Now create the service.
