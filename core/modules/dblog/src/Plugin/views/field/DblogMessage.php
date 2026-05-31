@@ -59,8 +59,12 @@ class DblogMessage extends FieldPluginBase {
     $value = $this->getValue($values);
 
     if ($this->options['replace_variables']) {
-      $variables = unserialize($this->getvalue($values, 'variables'));
-      return new FormattableMarkup($value, (array) $variables);
+      $variables = unserialize($this->getValue($values, 'variables'), ['allowed_classes' => false]);
+      if (is_array($variables)) {
+        return new FormattableMarkup($value, $variables);
+      }
+      // Deserialization failed or returned non-array; render without variable substitution.
+      return $this->sanitizeValue($value);
     }
     else {
       return $this->sanitizeValue($value);
