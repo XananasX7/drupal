@@ -355,7 +355,7 @@ class DbLogController extends ControllerBase {
   public function formatMessage($row) {
     // Check for required properties.
     if (isset($row->message, $row->variables)) {
-      $variables = @unserialize($row->variables);
+      $variables = @unserialize($row->variables, ['allowed_classes' => false]);
       // Messages without variables or user specified text.
       if ($variables === NULL) {
         $message = Xss::filterAdmin($row->message);
